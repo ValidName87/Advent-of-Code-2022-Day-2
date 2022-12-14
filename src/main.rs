@@ -21,15 +21,20 @@ fn main() {
                         chars.next();
                         chars.next().unwrap()
                     } {
-                        'X' => Move::Rock,
-                        'Y' => Move::Paper,
-                        'Z' => Move::Scissors,
-                        _ => panic!("Second move should be X, Y, or Z!"),
+                        // From first part of AoC
+                        // 'X' => Move::Rock,
+                        // 'Y' => Move::Paper,
+                        // 'Z' => Move::Scissors,
+                        // _ => panic!("Second move should be X, Y, or Z!"),
+                        'X' => Outcome::Loss,
+                        'Y' => Outcome::Draw,
+                        'Z' => Outcome::Win,
+                        _ => panic!("Outcome should be X, Y, or Z!"),
                     }
                 },
             )
         })
-        .map(|moves| play_game(&moves.1, &moves.0))
+        .map(|moves| /*play_game(&moves.1, &moves.0)*/ play_with_outcome(&moves.0, &moves.1))
         .sum::<i32>();
 
     println!("The total points**: {}", points);
@@ -109,4 +114,8 @@ impl Move {
 
 fn play_game(your_move: &Move, other_move: &Move) -> i32 {
     your_move.point_value() + your_move.play_against(other_move).point_value()
+}
+
+fn play_with_outcome(other_move: &Move, outcome: &Outcome) -> i32 {
+    outcome.point_value() + Move::get_outcome(other_move, outcome).point_value()
 }
