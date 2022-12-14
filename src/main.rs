@@ -1,4 +1,4 @@
-use std::{fs, str::SplitAsciiWhitespace, thread::ScopedJoinHandle};
+use std::fs;
 
 fn main() {
     let input_text = fs::read_to_string("input.txt").expect("Couldn't read the input!");
