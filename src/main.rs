@@ -1,7 +1,38 @@
-use std::fs;
+use std::{fs, str::SplitAsciiWhitespace, thread::ScopedJoinHandle};
 
 fn main() {
-    let input_text = fs::read_to_string("input.txt");
+    let input_text = fs::read_to_string("input.txt").expect("Couldn't read the input!");
+
+    let points = input_text
+        .split("\n")
+        .map(|s| {
+            let mut chars = s.chars();
+            (
+                {
+                    match chars.next().unwrap() {
+                        'A' => Move::Rock,
+                        'B' => Move::Paper,
+                        'C' => Move::Scissors,
+                        _ => panic!("Fist move should be A, B, or C!"),
+                    }
+                },
+                {
+                    match {
+                        chars.next();
+                        chars.next().unwrap()
+                    } {
+                        'X' => Move::Rock,
+                        'Y' => Move::Paper,
+                        'Z' => Move::Scissors,
+                        _ => panic!("Second move should be X, Y, or Z!"),
+                    }
+                },
+            )
+        })
+        .map(|moves| play_game(&moves.1, &moves.0))
+        .sum::<i32>();
+
+    println!("The total points**: {}", points);
 }
 
 enum Outcome {
@@ -43,6 +74,26 @@ impl Move {
                 Move::Rock => Outcome::Loss,
                 Move::Paper => Outcome::Win,
                 Move::Scissors => Outcome::Draw,
+            },
+        }
+    }
+
+    fn get_outcome(other_move: &Move, outcome: &Outcome) -> Move {
+        match other_move {
+            Move::Rock => match outcome {
+                Outcome::Win => Move::Paper,
+                Outcome::Draw => Move::Rock,
+                Outcome::Loss => Move::Scissors,
+            },
+            Move::Paper => match outcome {
+                Outcome::Win => Move::Scissors,
+                Outcome::Draw => Move::Paper,
+                Outcome::Loss => Move::Rock,
+            },
+            Move::Scissors => match outcome {
+                Outcome::Win => Move::Rock,
+                Outcome::Draw => Move::Scissors,
+                Outcome::Loss => Move::Paper,
             },
         }
     }
